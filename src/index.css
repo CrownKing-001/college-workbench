@@ -1,0 +1,279 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ── 深色主题（默认）──────────────────────────────────
+     data-theme 未设置或 = dark 时生效。 */
+  :root {
+    /* shadcn/ui 用的 HSL 变量（深色） */
+    --background: 222 20% 11%;
+    --foreground: 210 20% 92%;
+    --card: 222 18% 14%;
+    --card-foreground: 210 20% 92%;
+    --popover: 222 20% 13%;
+    --popover-foreground: 210 20% 92%;
+    --primary: 210 20% 92%;
+    --primary-foreground: 222 22% 12%;
+    --secondary: 220 16% 19%;
+    --secondary-foreground: 210 20% 92%;
+    --muted: 220 16% 19%;
+    --muted-foreground: 215 14% 62%;
+    --accent: 220 16% 22%;
+    --accent-foreground: 210 20% 95%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 14% 24%;
+    --input: 220 14% 24%;
+    --ring: 210 20% 70%;
+    --radius: 0.625rem;
+
+    /* 应用自用语义变量（深色值） */
+    --surface-0: #12161d; /* 应用底色 */
+    --surface-1: #1a1f28; /* 卡片 */
+    --surface-2: #171c24; /* 卡片次档 */
+    --surface-3: #1e242e; /* 内层 / 输入框底 */
+    --surface-4: #262d38; /* hover 底 */
+    --surface-5: #333c49; /* 更深边框 / 深芯片 */
+    --sidebar: #0d1117;  /* 侧边栏 */
+    --header: #151a21;   /* 顶栏 */
+    --border-1: #232a34; /* 边框（深） */
+    --border-2: #2b333f; /* 边框（略浅） */
+    --border-3: #333c49; /* 边框（更浅 / 输入框边） */
+    --text-1: #e2e8f0;   /* 主文字 */
+    --text-2: #cbd5e1;   /* 正文 */
+    --text-3: #94a3b8;   /* 次要 */
+    --text-4: #64748b;   /* 弱化 */
+  }
+
+  /* ── 浅色主题 ─────────────────────────────────────── */
+  :root[data-theme='light'] {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 222 47% 11%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 222 47% 11%;
+
+    --surface-0: #f8fafc;
+    --surface-1: #ffffff;
+    --surface-2: #f8fafc;
+    --surface-3: #f1f5f9;
+    --surface-4: #e2e8f0;
+    --surface-5: #cbd5e1;
+    --sidebar: #f8fafc;
+    --header: #ffffff;
+    --border-1: #e2e8f0;
+    --border-2: #cbd5e1;
+    --border-3: #cbd5e1;
+    --text-1: #0f172a;
+    --text-2: #1e293b;
+    --text-3: #475569;
+    --text-4: #64748b;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-[var(--surface-0)] text-[var(--text-1)];
+    /* 桌面程序观感：默认不可选中文本，输入区域单独放开 */
+    -webkit-user-select: none;
+    user-select: none;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei UI',
+      'Microsoft YaHei', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* 原生控件跟随当前主题 */
+  :root {
+    color-scheme: dark;
+  }
+  :root[data-theme='light'] {
+    color-scheme: light;
+  }
+  input,
+  textarea,
+  select,
+  [contenteditable='true'] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  /* 原生控件颜色跟随主题 */
+  input[type='date'],
+  input[type='number'],
+  input[type='text'],
+  input[type='time'],
+  textarea,
+  select {
+    color-scheme: inherit;
+  }
+  /* 日期选择器图标在暗色下可见；浅色下用原生深色图标 */
+  input[type='date']::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+  :root[data-theme='dark'] input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(0.75);
+  }
+}
+
+/* ── 深色适配：把组件里写死的浅色 slate 类整体映射到深色 ──
+   只在 data-theme=dark 下生效；浅色模式让这些类回到原生浅色值。 */
+@layer utilities {
+  :root[data-theme='dark'] .bg-white { background-color: #1a1f28 !important; }
+  :root[data-theme='dark'] .bg-slate-50 { background-color: #171c24 !important; }
+  :root[data-theme='dark'] .bg-slate-100 { background-color: #1e242e !important; }
+  :root[data-theme='dark'] .bg-slate-200 { background-color: #262d38 !important; }
+  :root[data-theme='dark'] .bg-slate-800 { background-color: #0f1319 !important; }
+  :root[data-theme='dark'] .bg-slate-900 { background-color: #0b0e13 !important; }
+
+  /* 文字 */
+  :root[data-theme='dark'] .text-slate-800,
+  :root[data-theme='dark'] .text-slate-700 { color: #dbe3ec !important; }
+  :root[data-theme='dark'] .text-slate-600 { color: #b6c2d1 !important; }
+  :root[data-theme='dark'] .text-slate-500 { color: #93a1b3 !important; }
+  :root[data-theme='dark'] .text-slate-400 { color: #8b9aad !important; }
+  :root[data-theme='dark'] .text-slate-900 { color: #eef3f9 !important; }
+
+  :root[data-theme='dark'] .text-white { color: #ffffff !important; }
+  :root[data-theme='dark'] .text-white\/80 { color: rgba(255, 255, 255, 0.85) !important; }
+
+  /* 边框与分隔线 */
+  :root[data-theme='dark'] .border-slate-200 { border-color: #2b333f !important; }
+  :root[data-theme='dark'] .border-slate-300 { border-color: #38424f !important; }
+  :root[data-theme='dark'] .border-slate-100 { border-color: #232a34 !important; }
+  :root[data-theme='dark'] .divide-slate-200 > * + * { border-color: #2b333f !important; }
+
+  /* hover 态 */
+  :root[data-theme='dark'] .hover\:bg-slate-100:hover { background-color: #232a34 !important; }
+  :root[data-theme='dark'] .hover\:bg-slate-200:hover { background-color: #2b333f !important; }
+  :root[data-theme='dark'] .hover\:bg-slate-50:hover { background-color: #1e242e !important; }
+  :root[data-theme='dark'] .hover\:border-slate-400:hover { border-color: #4a5568 !important; }
+  :root[data-theme='dark'] .hover\:text-slate-600:hover { color: #cbd5e1 !important; }
+
+  /* 品牌色在暗底上要提亮，保证对比度 */
+  :root[data-theme='dark'] .text-emerald-600 { color: #34d399 !important; }
+  :root[data-theme='dark'] .text-emerald-700 { color: #6ee7b7 !important; }
+  :root[data-theme='dark'] .text-amber-600 { color: #fbbf24 !important; }
+  :root[data-theme='dark'] .text-amber-800 { color: #fcd34d !important; }
+  :root[data-theme='dark'] .text-rose-600 { color: #fb7185 !important; }
+  :root[data-theme='dark'] .text-sky-600 { color: #38bdf8 !important; }
+  :root[data-theme='dark'] .text-sky-700 { color: #7dd3fc !important; }
+  :root[data-theme='dark'] .text-sky-800 { color: #7dd3fc !important; }
+  :root[data-theme='dark'] .text-indigo-600 { color: #818cf8 !important; }
+
+  :root[data-theme='dark'] .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.12) !important; }
+  :root[data-theme='dark'] .bg-amber-50 { background-color: rgba(245, 158, 11, 0.12) !important; }
+  :root[data-theme='dark'] .bg-rose-50 { background-color: rgba(244, 63, 94, 0.12) !important; }
+  :root[data-theme='dark'] .bg-sky-50 { background-color: rgba(14, 165, 233, 0.12) !important; }
+  :root[data-theme='dark'] .bg-indigo-50 { background-color: rgba(99, 102, 241, 0.12) !important; }
+
+  :root[data-theme='dark'] .bg-emerald-600 { background-color: #067a58 !important; }
+  :root[data-theme='dark'] .bg-emerald-500 { background-color: #078257 !important; }
+  :root[data-theme='dark'] .hover\:bg-emerald-500:hover { background-color: #078257 !important; }
+  :root[data-theme='dark'] .hover\:bg-emerald-600:hover { background-color: #067a58 !important; }
+  :root[data-theme='dark'] .bg-emerald-400 { background-color: #10b981 !important; }
+  :root[data-theme='dark'] .border-emerald-600 { border-color: #067a58 !important; }
+  :root[data-theme='dark'] .border-emerald-500 { border-color: #078257 !important; }
+
+  :root[data-theme='dark'] .border-emerald-200 { border-color: rgba(16, 185, 129, 0.35) !important; }
+  :root[data-theme='dark'] .border-emerald-300 { border-color: rgba(16, 185, 129, 0.45) !important; }
+  :root[data-theme='dark'] .border-amber-200 { border-color: rgba(245, 158, 11, 0.3) !important; }
+  :root[data-theme='dark'] .border-amber-300 { border-color: rgba(245, 158, 11, 0.4) !important; }
+  :root[data-theme='dark'] .border-rose-200 { border-color: rgba(244, 63, 94, 0.35) !important; }
+  :root[data-theme='dark'] .border-sky-200 { border-color: rgba(14, 165, 233, 0.3) !important; }
+  :root[data-theme='dark'] .border-violet-200 { border-color: rgba(139, 92, 246, 0.3) !important; }
+  :root[data-theme='dark'] .hover\:border-emerald-300:hover { border-color: rgba(16, 185, 129, 0.55) !important; }
+  :root[data-theme='dark'] .hover\:border-emerald-400:hover { border-color: rgba(16, 185, 129, 0.7) !important; }
+  :root[data-theme='dark'] .hover\:bg-emerald-50:hover { background-color: rgba(16, 185, 129, 0.16) !important; }
+  :root[data-theme='dark'] .hover\:bg-emerald-50\/50:hover { background-color: rgba(16, 185, 129, 0.1) !important; }
+  :root[data-theme='dark'] .hover\:bg-emerald-100:hover { background-color: rgba(16, 185, 129, 0.22) !important; }
+  :root[data-theme='dark'] .bg-emerald-50\/70 { background-color: rgba(16, 185, 129, 0.1) !important; }
+  :root[data-theme='dark'] .bg-emerald-50\/60 { background-color: rgba(16, 185, 129, 0.09) !important; }
+  :root[data-theme='dark'] .bg-amber-50\/70 { background-color: rgba(245, 158, 11, 0.1) !important; }
+  :root[data-theme='dark'] .border-emerald-100 { border-color: rgba(16, 185, 129, 0.22) !important; }
+  :root[data-theme='dark'] .border-amber-100 { border-color: rgba(245, 158, 11, 0.22) !important; }
+  :root[data-theme='dark'] .text-emerald-800 { color: #6ee7b7 !important; }
+  :root[data-theme='dark'] .text-amber-700 { color: #fcd34d !important; }
+  :root[data-theme='dark'] .text-emerald-900 { color: #a7f3d0 !important; }
+  :root[data-theme='dark'] .text-amber-900 { color: #fde68a !important; }
+
+  :root[data-theme='dark'] .ring-emerald-200 { --tw-ring-color: rgba(16, 185, 129, 0.35) !important; }
+  :root[data-theme='dark'] .ring-rose-100 { --tw-ring-color: rgba(244, 63, 94, 0.3) !important; }
+  :root[data-theme='dark'] .ring-amber-100 { --tw-ring-color: rgba(245, 158, 11, 0.3) !important; }
+  :root[data-theme='dark'] .ring-emerald-100 { --tw-ring-color: rgba(16, 185, 129, 0.3) !important; }
+  :root[data-theme='dark'] .border-emerald-400 { border-color: rgba(16, 185, 129, 0.7) !important; }
+
+  :root[data-theme='dark'] .text-orange-600 { color: #fb923c !important; }
+
+  /* 卡片阴影：浅色投影在暗底下会发灰，统一换成黑色投影 */
+  :root[data-theme='dark'] .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4) !important; }
+  :root[data-theme='dark'] .shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.45), 0 1px 2px -1px rgba(0, 0, 0, 0.45) !important; }
+  :root[data-theme='dark'] .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.5) !important; }
+  :root[data-theme='dark'] .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5) !important; }
+  :root[data-theme='dark'] .shadow-emerald-100 { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4) !important; }
+
+  /* 半透明白底在暗色下要压暗，避免发灰 */
+  :root[data-theme='dark'] .bg-white\/15 { background-color: rgba(255, 255, 255, 0.08) !important; }
+  :root[data-theme='dark'] .bg-white\/10 { background-color: rgba(255, 255, 255, 0.06) !important; }
+  :root[data-theme='dark'] .bg-white\/20 { background-color: rgba(255, 255, 255, 0.1) !important; }
+  :root[data-theme='dark'] .bg-white\/25 { background-color: rgba(255, 255, 255, 0.12) !important; }
+}
+
+@layer utilities {
+  /* 细滚动条，贴近原生桌面应用 */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.26);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.45);
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

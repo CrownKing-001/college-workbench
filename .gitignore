@@ -1,0 +1,35 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# ── 运行时数据：个人课表 / 重要事项 / 饮食照片，绝不入库 ──
+# 程序首次运行会在项目根建 data/ 写入 JSON 与照片，属于个人数据。
+data
+# electron-builder 的打包产物
+release
+# 冒烟测试 / 暗色校验输出
+.smoke
+
+# OCR 自测产生的中间结果
+*.ocr.json
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
