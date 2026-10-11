@@ -66,9 +66,9 @@
 ### 方式二 · 从源码跑
 
 ```bash
-npm install
-npm run electron     # 构建后在 Electron 窗口里跑
-npm run dev          # 或在浏览器里热更新开发 → http://localhost:3000
+pnpm install
+pnpm electron     # 构建后在 Electron 窗口里跑
+pnpm dev          # 或在浏览器里热更新开发 → http://localhost:3000
 ```
 
 ## 两条导入路径
@@ -133,13 +133,16 @@ data/fitplan-health-logs.json  体重 / 睡眠   data/calendars/*.jpg           
 ## 开发
 
 ```bash
-npm install
-npm run dev        # 浏览器热更新（http://localhost:3000）
-npm run electron   # 构建后在 Electron 里跑
-npm run dist       # 打包免安装便携 exe → release/
-npm run smoke      # 冒烟测试
-npm run dark       # 暗色主题校验（对比度 / WCAG）
+pnpm install       # 依赖用 pnpm 装（仓库只保留 pnpm-lock.yaml）
+
+pnpm dev           # 浏览器热更新（http://localhost:3000）
+pnpm electron      # 构建后在 Electron 里跑
+pnpm dist          # 打包免安装便携 exe → release/
+pnpm smoke         # 冒烟测试
+pnpm dark          # 暗色主题校验（对比度 / WCAG）
 ```
+
+> 用 `npm run <脚本>` 也可以 —— 脚本本身与包管理器无关。
 
 改了解析规则请顺手跑一下自测：
 
