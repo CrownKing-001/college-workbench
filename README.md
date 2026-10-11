@@ -51,8 +51,11 @@
 
 ### 方式一 · 下载免安装版
 
-1. 到 [**Releases**](https://github.com/CrownKing-001/college-workbench/releases) 下载 `大学日程-桌面工作台-便携版.exe`
+1. 到 [**Releases**](https://github.com/CrownKing-001/college-workbench/releases/latest) 下载最新的便携版 exe（`college-desk-<版本>-portable.exe`）
 2. 双击运行即可
+
+> 本地 `npm run dist` 打包出的文件名是中文的 `大学日程-桌面工作台-<版本>-便携版.exe`；
+> GitHub 的资源接口不接受中文文件名，所以 Release 附件用了英文名 —— 两者是同一个程序。
 
 > **首次运行会被 Windows 拦一下**
 >
