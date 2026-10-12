@@ -418,6 +418,46 @@ export default function Settings() {
           <p className="text-[11px] text-slate-400 mt-1.5">
             每个类型会成为「运动打卡」页上的一个按钮，按你自己的习惯改。
           </p>
+
+          <div className="mt-4 pt-3 border-t border-[var(--border-1)]">
+            <span className="text-[11px] text-slate-400">训练日（点选一周里安排训练的日子）</span>
+            <div className="flex flex-wrap gap-1.5 mt-1.5">
+              {[
+                [1, '一'], [2, '二'], [3, '三'], [4, '四'],
+                [5, '五'], [6, '六'], [7, '日'],
+              ].map(([n, cn_]) => {
+                const set = new Set(
+                  (settings.trainDays ?? '')
+                    .split(/[,，]/)
+                    .map((s) => Number(s.trim()))
+                    .filter((x) => Number.isInteger(x) && x >= 1 && x <= 7)
+                );
+                const on = set.has(n as number);
+                return (
+                  <button
+                    key={n}
+                    onClick={() => {
+                      if (on) set.delete(n as number);
+                      else set.add(n as number);
+                      setSettings({ trainDays: [...set].sort((a, b) => a - b).join(',') });
+                    }}
+                    className={cn(
+                      'w-10 h-9 rounded-lg border text-xs font-medium transition-colors',
+                      on
+                        ? 'bg-emerald-600 border-emerald-600 text-white'
+                        : 'bg-[var(--surface-3)] border-[var(--border-3)] text-slate-400 hover:border-emerald-500/50 hover:text-[var(--text-1)]'
+                    )}
+                  >
+                    周{cn_}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[11px] text-slate-400 mt-1.5">
+              「体重作息」的训练打卡日历会标出训练日与休息日，连续打卡只按训练日计算，
+              休息日不会打断连续记录。全部取消则不再区分。
+            </p>
+          </div>
         </Panel>
 
         <Panel title="饮食照片" icon={ImageIcon}>

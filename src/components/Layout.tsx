@@ -90,11 +90,20 @@ export default function Layout({
     (a) => !a.done && daysUntil(fromKey(a.due), store.today) <= 3
   ).length;
 
-  // 顶部倒计时：取最近 2 个未完成、且还没过期的「重要事项」
-  const upcoming = [...store.milestones]
-    .filter((m) => !m.done && m.date && daysUntil(fromKey(m.date), store.today) >= 0)
-    .sort((a, b) => (a.date ?? '').localeCompare(b.date ?? ''))
-    .slice(0, 2);
+  /**
+   * 顶部倒计时芯片。
+   *
+   * 优先显示被「钉」到总览的事项 —— 用户在「重要事项」里钉了什么，
+   * 顶部就跟着显示什么，两处语义一致，不会出现「钉了 A 却看到 B」的困惑。
+   * 一个都没钉时退回「最近要到期的两个」，保证顶部始终有信息可看。
+   */
+  const upcoming = (() => {
+    const live = store.milestones
+      .filter((m) => !m.done && m.date && daysUntil(fromKey(m.date), store.today) >= 0)
+      .sort((a, b) => (a.date ?? '').localeCompare(b.date ?? ''));
+    const pinned = live.filter((m) => m.pinned);
+    return (pinned.length ? pinned : live).slice(0, 2);
+  })();
 
   // 导航小红点：进入提醒窗口的未完成事项数
   const urgentMilestones = store.milestones.filter(
@@ -161,7 +170,7 @@ export default function Layout({
                           'w-full flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors',
                           active
                             ? 'bg-emerald-600 text-white font-medium shadow-sm shadow-emerald-900/40'
-                            : 'text-slate-400 hover:bg-[var(--surface-1)] hover:text-[var(--text-1)]'
+                            : 'text-[var(--text-3)] hover:bg-[var(--surface-1)] hover:text-[var(--text-1)]'
                         )}
                       >
                         <n.icon className="w-4 h-4 shrink-0" />

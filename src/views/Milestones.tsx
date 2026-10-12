@@ -1,10 +1,10 @@
-﻿// 重要事项：期末考试 / 竞赛 / 证书 / 报名 / 出行……全部由用户自由增删改。
+// 重要事项：期末考试 / 竞赛 / 证书 / 报名 / 出行……全部由用户自由增删改。
 import { useMemo, useState } from 'react';
 import { useStore, uid, type Milestone } from '@/store/store';
 import { Panel, Empty, Chip, IconButton, Field, inputCls, btnPrimary, btnGhost } from '@/components/Panel';
 import { fromKey, daysUntil } from '@/lib/storage';
 import {
-  Plus, Pencil, Trash2, X, Check, CalendarClock, ListChecks, Sparkles, Copy,
+  Plus, Pencil, Trash2, X, Check, CalendarClock, ListChecks, Sparkles, Copy, Pin,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -144,6 +144,13 @@ export default function Milestones() {
   };
 
   const remove = (m: Milestone) => setMilestones(list.filter((x) => x.id !== m.id));
+
+  /**
+   * 钉住 / 取消钉住：只影响「总览绿色条是否显示这个倒计时」，不删事项本身。
+   * 这是总览倒计时卡片唯一的开关 —— 两边共用同一份数据。
+   */
+  const togglePin = (m: Milestone) =>
+    setMilestones(list.map((x) => (x.id === m.id ? { ...x, pinned: !x.pinned } : x)));
 
   const duplicate = (m: Milestone) =>
     setMilestones([...list, { ...m, id: uid(), title: `${m.title}（副本）`, checklist: [...m.checklist] }]);
@@ -427,6 +434,7 @@ export default function Milestones() {
                         <Chip tone="slate">{m.category}</Chip>
                         {!m.done && <Chip tone={u.tone}>{u.text}</Chip>}
                         {m.done && <Chip tone="emerald">已完成</Chip>}
+                        {m.pinned && <Chip tone="amber">已钉到总览</Chip>}
                       </div>
                       <p className="text-[11px] text-slate-400 mt-1 tabular-nums">
                         {m.date ? `${m.date}${m.time ? ` ${m.time}` : ''}` : '日期待定'}
@@ -452,6 +460,18 @@ export default function Milestones() {
                     </div>
 
                     <div className="flex items-center gap-0.5 shrink-0">
+                      <button
+                        onClick={() => togglePin(m)}
+                        title={m.pinned ? '取消在总览显示倒计时' : '在总览显示倒计时'}
+                        className={cn(
+                          'w-7 h-7 rounded-lg flex items-center justify-center transition-colors shrink-0',
+                          m.pinned
+                            ? 'text-amber-400 bg-amber-500/15 hover:bg-amber-500/25'
+                            : 'text-slate-500 hover:text-[var(--text-1)] hover:bg-[var(--border-2)]'
+                        )}
+                      >
+                        <Pin className={cn('w-3.5 h-3.5', m.pinned && 'fill-current')} />
+                      </button>
                       <IconButton onClick={() => duplicate(m)} title="复制一份" tone="slate">
                         <Copy className="w-3.5 h-3.5" />
                       </IconButton>
@@ -471,7 +491,7 @@ export default function Milestones() {
       </Panel>
 
       <p className="text-[11px] text-slate-500">
-        提示：清单里的小方框点一下就划掉，方便考前一天逐条核对。
+        提示：点图钉 📌 把事项钉到「总览」首页的绿色条上显示倒计时；清单里的小方框点一下就划掉，方便考前一天逐条核对。
         数据存在本机 <code className="rounded bg-[var(--surface-3)] px-1">data/fitplan-milestones.json</code>，可直接备份。
       </p>
     </div>

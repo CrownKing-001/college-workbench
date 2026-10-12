@@ -246,7 +246,12 @@ export async function seedDietOnce<D extends { date: string; meal: string; text:
 ): Promise<{ diet: D[]; seed: string[]; merged: number }> {
   const fresh = DIET_SEED.filter((s) => !mergedIds.includes(s.id));
   if (!fresh.length) return { diet, seed: mergedIds, merged: 0 };
-  const added = fresh.map(({ id: _id, ...rest }) => rest as unknown as D);
+  // 去掉预置数据里的 id（它只用于去重，不该混进用户记录）
+  const added = fresh.map((s) => {
+    const rest: Record<string, unknown> = { ...s };
+    delete rest.id;
+    return rest as unknown as D;
+  });
   return {
     diet: [...diet, ...added],
     seed: [...mergedIds, ...fresh.map((f) => f.id)],

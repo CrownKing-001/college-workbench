@@ -62,7 +62,10 @@ export default function CalendarAcademic() {
 
   const active = useMemo(() => docs.find((d) => d.id === activeId) ?? docs[0] ?? null, [docs, activeId]);
 
-  // 切到某张校历时，把它的识别结果载入草稿
+  // 切到某张校历时，把它的识别结果载入草稿。
+  // 这里在 effect 里同步重置草稿：草稿是「针对当前选中项」的临时编辑态，
+  // 换一张校历就必须整体替换，用渲染期派生反而更难读。
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!active) {
       setDraft(null);
@@ -84,6 +87,7 @@ export default function CalendarAcademic() {
       alive = false;
     };
   }, [active]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const desktopReady = Boolean(window.desktop?.calendar);
 

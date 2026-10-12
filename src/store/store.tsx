@@ -113,6 +113,13 @@ export interface Settings {
   runEnabled: boolean;
   /** 可选的打卡类型，用中文逗号或英文逗号分隔 */
   runTypes: string;
+  /**
+   * 训练日：一周里哪几天安排训练，用 1(周一)~7(周日) 表示，逗号分隔。
+   * 「体重作息」的打卡日历据此标出「有训练安排 / 休息日」，
+   * 连续打卡也只按训练日计算 —— 休息日不会打断连续记录。
+   * 留空 = 不区分训练日与休息日（日历只显示打没打卡，不算连续）。
+   */
+  trainDays: string;
 }
 
 /** 用户自建的一键套餐 */
@@ -146,6 +153,12 @@ export interface Milestone {
   note?: string;
   /** 清单项（备考要带的东西、复习要点……） */
   checklist: string[];
+  /**
+   * 是否「钉」到总览首页的绿色欢迎条上显示倒计时。
+   * 只有这一个标记决定总览显示哪些事项 —— 总览的「添加」是从这里挑选，
+   * 不是另建一份数据，避免两处各说各话。
+   */
+  pinned?: boolean;
 }
 
 /** 从图片里识别出来的一条日期（历史兼容字段，当前识别课表不再产出） */
@@ -216,6 +229,8 @@ export const DEFAULT_SETTINGS: Settings = {
   runTarget: 30,
   runEnabled: true,
   runTypes: '跑步,健步走,健身房,球类,游泳,骑行',
+  // 默认周一/三/五为训练日 —— 常见节奏，用户可在「设置」里随时改
+  trainDays: '1,3,5',
 };
 
 const FALLBACK: StoreShape = {

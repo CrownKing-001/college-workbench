@@ -44,6 +44,19 @@
     --text-2: #cbd5e1;   /* 正文 */
     --text-3: #94a3b8;   /* 次要 */
     --text-4: #64748b;   /* 弱化 */
+
+    /* ── 美化用：层次、阴影、强调色 ─────────────────── */
+    /* 卡片阴影：暗色下用纯黑投影，避免发灰 */
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 26px -14px rgba(0, 0, 0, 0.55);
+    --shadow-card-hover: 0 2px 5px rgba(0, 0, 0, 0.42), 0 18px 38px -16px rgba(0, 0, 0, 0.65);
+    --shadow-pop: 0 12px 34px -10px rgba(0, 0, 0, 0.7);
+    /* 卡片头部一层极淡的渐变，制造“顶面受光”的立体感 */
+    --panel-head: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0));
+    /* 高光描边：让卡片边缘从背景里“浮”起来 */
+    --hairline: rgba(255, 255, 255, 0.06);
+    /* 图标底色（统计卡左侧的小方块） */
+    --chip-bg: rgba(255, 255, 255, 0.06);
+    --focus-ring: rgba(16, 185, 129, 0.5);
   }
 
   /* ── 浅色主题 ─────────────────────────────────────── */
@@ -83,6 +96,15 @@
     --text-2: #1e293b;
     --text-3: #475569;
     --text-4: #64748b;
+
+    /* 浅色下改用冷色淡投影，纯黑会显脏 */
+    --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05), 0 10px 26px -18px rgba(15, 23, 42, 0.22);
+    --shadow-card-hover: 0 2px 6px rgba(15, 23, 42, 0.08), 0 18px 38px -20px rgba(15, 23, 42, 0.3);
+    --shadow-pop: 0 14px 36px -12px rgba(15, 23, 42, 0.3);
+    --panel-head: linear-gradient(180deg, rgba(15, 23, 42, 0.018), rgba(15, 23, 42, 0));
+    --hairline: rgba(15, 23, 42, 0.05);
+    --chip-bg: rgba(15, 23, 42, 0.045);
+    --focus-ring: rgba(5, 150, 105, 0.4);
   }
 }
 
@@ -240,7 +262,82 @@
   :root[data-theme='dark'] .bg-white\/25 { background-color: rgba(255, 255, 255, 0.12) !important; }
 }
 
+/* ── 浅色适配：把偏淡的 slate 文字整体压深 ──────────────────
+   这套界面最初是按深色设计的，浅色主题下直接沿用 Tailwind 的
+   slate-400/500 会在白底上只剩 2~3:1 的对比度（远低于无障碍要求的 4.5:1），
+   侧边栏导航、说明文字都会「看不清」。
+   深色主题已经有一层反向映射，这里补上浅色的对应一份。 */
 @layer utilities {
+  :root[data-theme='light'] .text-slate-400 { color: #5b6b7f !important; }
+  :root[data-theme='light'] .text-slate-500 { color: #55637a !important; }
+  :root[data-theme='light'] .text-slate-600 { color: #475569 !important; }
+
+  /* 占位符可以比正文淡一点，但也要看得清 */
+  :root[data-theme='light'] .placeholder\:text-slate-600::placeholder { color: #8593a6 !important; }
+
+  /* 深色下被提亮的品牌色，在浅色里回到原本的深色，保证白底可读 */
+  :root[data-theme='light'] .text-emerald-400 { color: #047857 !important; }
+  :root[data-theme='light'] .text-emerald-300 { color: #059669 !important; }
+  :root[data-theme='light'] .text-amber-400 { color: #b45309 !important; }
+  :root[data-theme='light'] .text-amber-300 { color: #b45309 !important; }
+  :root[data-theme='light'] .text-rose-400 { color: #be123c !important; }
+  :root[data-theme='light'] .text-rose-300 { color: #be123c !important; }
+  :root[data-theme='light'] .text-sky-400 { color: #0369a1 !important; }
+  :root[data-theme='light'] .text-sky-300 { color: #0369a1 !important; }
+  :root[data-theme='light'] .text-violet-400 { color: #6d28d9 !important; }
+  :root[data-theme='light'] .text-violet-300 { color: #6d28d9 !important; }
+
+  /* 半透明品牌底在浅色下要更淡一点，别糊成一块 */
+  :root[data-theme='light'] .bg-emerald-500\/12 { background-color: rgba(16, 185, 129, 0.1) !important; }
+  :root[data-theme='light'] .bg-sky-500\/12 { background-color: rgba(14, 165, 233, 0.1) !important; }
+  :root[data-theme='light'] .bg-amber-500\/12 { background-color: rgba(245, 158, 11, 0.12) !important; }
+  :root[data-theme='light'] .bg-rose-500\/12 { background-color: rgba(244, 63, 94, 0.1) !important; }
+  :root[data-theme='light'] .bg-violet-500\/12 { background-color: rgba(139, 92, 246, 0.1) !important; }
+}
+
+@layer utilities {
+  /* ── 统一卡片观感 ──────────────────────────────────
+     Panel 与各地自绘卡片共用，保证全应用的圆角 / 描边 / 阴影一致。 */
+  .card-surface {
+    background-color: var(--surface-1);
+    border: 1px solid var(--border-2);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-card);
+  }
+  /* 可点击的卡片：悬停时抬起来一点 */
+  .card-lift {
+    transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease;
+  }
+  .card-lift:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+    border-color: var(--border-3);
+  }
+
+  /* 统计卡左侧的图标底座 */
+  .icon-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.625rem;
+    background-color: var(--chip-bg);
+    flex-shrink: 0;
+  }
+
+  /* 键盘可达性：所有可聚焦元素都有清晰的焦点环（鼠标点击不显示） */
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+  }
+
+  /* 数字统一用等宽字形，跳动时不会左右抖 */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
   /* 细滚动条，贴近原生桌面应用 */
   ::-webkit-scrollbar {
     width: 10px;
