@@ -42,32 +42,41 @@ const views = viewArgs.length
 
 fs.mkdirSync(OUT, { recursive: true });
 
-for (const theme of themeList) {
-  for (const v of views) {
-    const file = path.join(OUT, `${theme}-${v}.png`);
-    fs.rmSync(file, { force: true });
-    try {
-      execFileSync(browser, [
-        '--headless=new',
-        '--disable-gpu',
-        '--hide-scrollbars',
-        '--no-first-run',
-        '--no-default-browser-check',
-        '--user-data-dir=' + path.join(OUT, '.edge-profile'),
-        '--window-size=1440,1000',
-        `--virtual-time-budget=4000`,
-        `--screenshot=${file}`,
-        `${BASE}/#/${v}?theme=${theme}`,
-      ], { stdio: 'ignore', timeout: 60000 });
-    } catch (e) {
-      console.log(`  [失败] ${theme}-${v}: ${e.message.split('\n')[0]}`);
-      continue;
-    }
-    if (fs.existsSync(file)) {
-      console.log(`  已截图 ${theme}-${v}.png`);
-    } else {
-      console.log(`  [无输出] ${theme}-${v}`);
+// Edge 的 user-data-dir 放系统临时目录，脚本结束就删掉。
+// 放在 .shots/ 里的话单个 profile 就有 275 MB，仓库会迅速膨胀。
+const { tempProfile, cleanup } = require('./cdp-profile.cjs');
+const profile = tempProfile('shots-edge');
+
+try {
+  for (const theme of themeList) {
+    for (const v of views) {
+      const file = path.join(OUT, `${theme}-${v}.png`);
+      fs.rmSync(file, { force: true });
+      try {
+        execFileSync(browser, [
+          '--headless=new',
+          '--disable-gpu',
+          '--hide-scrollbars',
+          '--no-first-run',
+          '--no-default-browser-check',
+          `--user-data-dir=${profile}`,
+          '--window-size=1440,1000',
+          `--virtual-time-budget=4000`,
+          `--screenshot=${file}`,
+          `${BASE}/#/${v}?theme=${theme}`,
+        ], { stdio: 'ignore', timeout: 60000 });
+      } catch (e) {
+        console.log(`  [失败] ${theme}-${v}: ${e.message.split('\n')[0]}`);
+        continue;
+      }
+      if (fs.existsSync(file)) {
+        console.log(`  已截图 ${theme}-${v}.png`);
+      } else {
+        console.log(`  [无输出] ${theme}-${v}`);
+      }
     }
   }
+} finally {
+  cleanup(profile);
 }
 console.log(`\n截图目录：${OUT}`);

@@ -22,8 +22,10 @@ const EDGE = [
 if (!EDGE) { console.error('找不到 Edge'); process.exit(1); }
 
 fs.mkdirSync(OUT, { recursive: true });
-const profile = path.join(OUT, '.cdp-picker');
-fs.mkdirSync(profile, { recursive: true });
+// profile 放系统临时目录，用完即删 —— 别留在仓库里（单个几百 MB）
+const { tempProfile, cleanupOnExit } = require('./cdp-profile.cjs');
+const profile = tempProfile('check-picker');
+cleanupOnExit(profile);
 
 const edge = spawn(EDGE, [
   '--headless=new', '--disable-gpu', '--hide-scrollbars',

@@ -192,7 +192,26 @@ pnpm unblock       # 清除 release/ 下所有文件的「下载标记」
 pnpm smoke         # 冒烟测试
 pnpm dark          # 暗色主题校验（对比度 / WCAG）
 pnpm lint          # ESLint
+pnpm clean         # 瘦身：删缓存与构建中间产物，保留 exe/zip
+pnpm clean:all     # 连 release/ 交付物一起删
 ```
+
+### 瘦身（`pnpm clean`）
+
+跑截图 / 打包会留下不少「可再生」的大文件，`pnpm clean` 一次性清掉：
+
+| 清理对象 | 典型体积 |
+| --- | --- |
+| `%TEMP%` 里遗留的便携版解压目录（每次双击便携 exe 都会释放一份） | 每份 ~400 MB |
+| `.shots/` 截图与浏览器 profile | 0.3~0.4 GB |
+| `release/win-unpacked`、免安装版解包目录（中间产物，exe/zip 保留） | ~740 MB |
+| `dist/`、`.tools-bin/`、`lint.json` | 很小 |
+
+**正在运行的实例不会被删** —— 脚本会先查 `%TEMP%` 里哪些解压目录有活进程，跳过它们。
+想先看看会删什么，加 `--dry`。
+
+> 浏览器 profile（Edge 的 `user-data-dir`）**不再落在仓库里**，而是放在系统临时目录、
+> 用完即删（`tools/cdp-profile.cjs`）。早先放在 `.shots/` 下，单个就有 275 MB。
 
 ### UI 截图与主题校验（排查界面问题很有用）
 
@@ -204,7 +223,9 @@ pnpm build
 node tools/serve.cjs 4180              # 起一个静态服务器
 node tools/shots-edge.cjs dark light   # 逐页截图 → .shots/
 node tools/shot-full.cjs settings light # 整页截图（长页面用这个）
-node tools/check-theme.cjs 4180        # 用 CDP 读真实计算样式，校验两套主题 + 对比度
+pnpm check:theme 4180                  # 用 CDP 读真实计算样式，校验两套主题 + 对比度
+pnpm check:picker 4180                 # 「点了没反应」类下拉控件回归
+pnpm check:features 4180               # 迁移功能的端到端回归
 ```
 
 `?theme=light` / `?theme=dark` 加到地址里可以临时覆盖主题（只影响本次显示，不写进设置），
@@ -271,6 +292,8 @@ tools/
   make-green.cjs     打包免安装版 zip（含签名步骤）
   unblock.cjs        清除下载标记
   codesign.ps1       自签名证书：-Setup / -Sign / -Status / -Remove
+  clean.cjs          瘦身：清缓存、构建中间产物、%TEMP% 遗留解压目录
+  cdp-profile.cjs    浏览器 profile 放系统临时目录、用完即删
 ```
 
 ## 已知问题

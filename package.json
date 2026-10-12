@@ -25,7 +25,12 @@
     "sign:status": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/codesign.ps1 -Status",
     "sign:remove": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/codesign.ps1 -Remove",
     "shots": "node electron/run-shots.cjs",
-    "check:foods": "node tools/check-foods.ts"
+    "check:foods": "node tools/check-foods.ts",
+    "check:picker": "node tools/check-picker.cjs",
+    "check:theme": "node tools/check-theme.cjs",
+    "check:features": "node tools/verify-features.cjs",
+    "clean": "node tools/clean.cjs --temp",
+    "clean:all": "node tools/clean.cjs --all --temp"
   },
   "build": {
     "appId": "com.collegedesk.app",
