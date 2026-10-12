@@ -8,16 +8,16 @@ const os = require('node:os');
 // 禁用 GPU 硬件加速：在无独显 / 虚拟机 / 远程桌面 / 显卡驱动异常的环境里，
 // Chromium 的 GPU 进程可能无法启动，直接以「GPU process isn't usable. Goodbye.」退出。
 // 本应用是工具类界面，软件渲染完全够用，禁用后启动更稳，也避免 GPU 缓存被争用报错。
-app.disableHardwareAcceleration();
-// 光 disableHardwareAcceleration 还不够：Electron 44 的 Dawn/WebGPU 后端仍会拉起 GPU 进程。
-// 再补两个命令行开关，彻底关掉 GPU 进程与硬件合成，强制走软件渲染。
-app.commandLine.appendSwitch('disable-gpu');
-app.commandLine.appendSwitch('disable-gpu-compositing');
-// 关键一招：把 GPU 线程放进主进程，彻底不 spawn 独立 GPU 进程，
-// 从根上避开「GPU process launch failed: error_code=18」以及随之而来的缓存争用。
-app.commandLine.appendSwitch('in-process-gpu');
-// 若失败根因是 Chromium 沙箱初始化不起来（日志里的 sandboxed_file_factory），这个开关跳过它。
-app.commandLine.appendSwitch('disable-gpu-sandbox');
+//
+// 说明：这一组开关是「先保证能开」的保守设置。曾试过按 1.6.1 的做法把它们全部去掉
+// （改用硬件加速），结果用户在部分机器上表现为「打不开」。启动可靠性优先于渲染性能，
+// 所以恢复为默认关闭硬件加速。确实想试硬件加速：set UD_HW_ACCEL=1 再启动。
+if (process.env.UD_HW_ACCEL !== '1') {
+  app.disableHardwareAcceleration();
+  // 光 disableHardwareAcceleration 还不够：Electron 44 的 Dawn/WebGPU 后端仍会拉起 GPU 进程。
+  app.commandLine.appendSwitch('disable-gpu');
+  app.commandLine.appendSwitch('disable-gpu-compositing');
+}
 
 // ── 早期初始化：userData 与缓存目录 ────────────────────────
 // 必须在 app ready 之前设定。
@@ -613,6 +613,19 @@ if (!gotLock) {
       } catch (err) {
         console.error('暗色校验异常:', err);
         app.exit(3);
+      }
+      return;
+    }
+
+    // 逐页截图模式：给每个视图在深/浅主题下各截一张，用于人工检查 UI
+    if (process.env.UD_SHOTS === '1') {
+      try {
+        const { runShots } = require('./shots.cjs');
+        const code = await runShots(app, BrowserWindow);
+        app.exit(code);
+      } catch (err) {
+        console.error('截图异常:', err);
+        app.exit(4);
       }
       return;
     }

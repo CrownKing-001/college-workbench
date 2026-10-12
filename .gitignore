@@ -19,6 +19,12 @@ data
 release
 # 冒烟测试 / 暗色校验输出
 .smoke
+# 界面截图与 CDP 临时 profile（tools/shots-edge.cjs 等产生）
+.shots
+# 打包时按需生成的 pnpm 转发脚本（tools/eb.cjs 产生）
+.tools-bin
+# lint / 临时产物
+lint.json
 
 # OCR 自测产生的中间结果
 *.ocr.json
